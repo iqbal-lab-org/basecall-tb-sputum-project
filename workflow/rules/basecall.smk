@@ -6,7 +6,7 @@ def infer_barcode_opts(wildcards, threads: int) -> str:
     elif len(run_df) == 0:
         raise KeyError(f"Nanopore run '{run}' was not found in the samplesheet")
 
-    kits = " ".join(run_df["barcode_kit"])
+    kits = " ".join(set(run_df["barcode_kit"]))
     return f'--barcode_kits "{kits}" --trim_barcodes --num_barcode_threads {threads}'
 
 
