@@ -9,4 +9,3 @@ dependencies:
   - snakemake
   - snakefmt
   - pandas
-prefix: /usr/local/Caskroom/miniconda/base/envs/basecall-tb-sputum
