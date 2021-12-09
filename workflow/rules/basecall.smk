@@ -1,3 +1,8 @@
+from pathlib import Path
+
+import pandas as pd
+
+
 def infer_barcode_opts(wildcards, threads: int) -> str:
     run = wildcards.run
     run_df = samplesheet.query("run == @run")
@@ -43,3 +48,36 @@ rule basecall:
             -i {input.fast5} \
             -s {output.save_path} > {log} 2>&1
         """
+
+
+def infer_basecall_run_dir(wildcards):
+    run = samplesheet.at[wildcards.sample, "run"]
+    return data_dir / f"basecalls/guppy_v{GUPPY_VERSION}/{run}/"
+
+
+def infer_sample_fastq_dir(sample, indir):
+    barcode = samplesheet.at[sample, "barcode"]
+    if pd.isna(barcode):  # singleplex
+        return Path(indir) / "pass"
+    return Path(indir) / f"pass/barcode{barcode[-2:]}"
+
+
+rule combine_fastqs:
+    input:
+        save_path=infer_basecall_run_dir,
+    output:
+        fastq=data_dir / f"fastqs/guppy_v{GUPPY_VERSION}/{sample}.fq.gz",
+    log:
+        rule_log_dir / f"combine_fastqs/guppy_v{GUPPY_VERSION}/{{sample}}.log",
+    threads: 4
+    resources:
+        mem_mb=lambda wildcards, attempt: int(GB * 4) * attempt,
+    params:
+        opts="-f -g",
+        fastq_dir=lambda wildcards, input: infer_sample_fastq_dir(
+            wildcards.sample, input.save_path
+        ),
+    container:
+        containers["seqkit"]
+    shell:
+        "seqkit scat {params.opts} -j {threads} -o {output.fastq} {params.fastq_dir} 2> {log}"
