@@ -1,8 +1,11 @@
 samplesheet:     "docs/samplesheet.csv"
 fast5_dir:       "/nfs/research/zi/zi/projects/tb/mada-mumbai-sputum/nanopore/fast5"
 basecall_config: "dna_r9.4.1_450bps_sup_prom.cfg"
+max_covg:        150  # subsample reads to this (if over)
+genome_size:     4411532
 containers:
   guppy-gpu: "docker://quay.io/mbhall88/guppy-gpu:5.0.16"
   guppy-cpu: "docker://quay.io/mbhall88/guppy-cpu:5.0.16"
   base:      "docker://bash:5.1"
   seqkit:    "docker://quay.io/biocontainers/seqkit:2.1.0--h9ee0642_0"
+  rasusa:    "docker://quay.io/mbhall88/rasusa:0.6.0"

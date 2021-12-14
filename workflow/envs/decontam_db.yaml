@@ -1,0 +1,11 @@
+name: decontam_db
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.8
+  - perl
+  - wget
+  - bioconda::enabrowsertools=1.5.4
+  - bioconda::seqtk=1.3

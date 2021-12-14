@@ -1,0 +1,11 @@
+name: krona
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.8
+  - pandas
+  - click=7.1.2
+  - bioconda::pysam=0.16.0.1
+  - bioconda::krona=2.7

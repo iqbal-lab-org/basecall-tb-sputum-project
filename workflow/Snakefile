@@ -21,18 +21,28 @@ containers: Dict[str, str] = config["containers"]
 # Constants for workflow
 GB = 1_024
 rules_dir = Path("workflow/rules").resolve()
+env_dir = Path("workflow/envs").resolve()
+scripts_dir = Path("workflow/scripts").resolve()
 fast5_dir = Path(config["fast5_dir"]).resolve()
 data_dir = Path("data").resolve()
 GUPPY_VERSION = containers["guppy-gpu"].split(":")[-1]
 rule_log_dir = Path("logs/stderr")
+decontam_db = data_dir / "decontam_db"
+results = Path("results").resolve()
+filtered_dir = results / "filtered"
+subsample_dir = results / "subsample"
+plot_dir = results / "plots"
+report_dir = results / "report"
 # =====================================
 
 
 # =====================================
 # Generate the set of required output files from the pipeline
 output: Set[Path] = set()
+filter_logfiles: Set[Path] = set()
 for sample, row in samplesheet.iterrows():
     output.add(data_dir / f"fastqs/guppy_v{GUPPY_VERSION}/{sample}.fq.gz")
+    filter_logfiles.add(rule_log_dir / "filter_contamination/{sample}.log")
 # =====================================
 
 
@@ -42,3 +52,6 @@ rule all:
 
 
 include: rules_dir / "basecall.smk"
+include: rules_dir / "qc.smk"
+include: rules_dir / "amr.smk"
+include: rules_dir / "report.smk"
