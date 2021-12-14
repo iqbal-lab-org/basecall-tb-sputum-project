@@ -32,6 +32,7 @@ results = Path("results").resolve()
 filtered_dir = results / "filtered"
 subsample_dir = results / "subsample"
 plot_dir = results / "plots"
+amr_dir = results / "amr_predictions"
 report_dir = results / "report"
 # =====================================
 
@@ -40,9 +41,11 @@ report_dir = results / "report"
 # Generate the set of required output files from the pipeline
 output: Set[Path] = set()
 filter_logfiles: Set[Path] = set()
+mykrobe_results: Set[Path] = set()
 for sample, row in samplesheet.iterrows():
     output.add(data_dir / f"fastqs/guppy_v{GUPPY_VERSION}/{sample}.fq.gz")
     filter_logfiles.add(rule_log_dir / "filter_contamination/{sample}.log")
+    mykrobe_results.add(amr_dir / f"{sample}.mykrobe.json")
 # =====================================
 
 

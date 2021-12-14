@@ -1,0 +1,9 @@
+name: composition_report
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pandas=1
+  - jinja2=2.11.2
+  - ripgrep=12.1.1

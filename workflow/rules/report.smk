@@ -21,7 +21,7 @@ rule plot_sample_composition:
 rule composition_report:
     input:
         filter_logs=list(filter_logfiles),
-        lineages=
+        lineages=list(mykrobe_results)
     output:
         html=report(
             report_dir / "composition.html",
@@ -32,12 +32,10 @@ rule composition_report:
     resources:
         mem_mb=GB,
     conda:
-        envs["composition_report"]
+        str(env_dir / "composition_report.yaml")
     params:
-        script=scripts["composition_report"],
-        assignment_dir=lambda wildcards, input: Path(input.lineage[0]).parent,
-        logs_dir=lambda wildcards, input: Path(input.filter_logs[0]).parent.parent,
-        template=config["composition_template"],
+        script=scripts_dir / "composition_report.yaml",
+        template=report_dir / "composition.html.jinja",
         contam_warning=5.0,
         unmapped_warning=5.0,
     log:

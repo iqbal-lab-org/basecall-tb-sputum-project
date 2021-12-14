@@ -3,7 +3,7 @@ rule mykrobe:
         reads=lambda wildcards: infer_reads(wildcards),
     output:
         report=(
-                RESULTS / "mykrobe/predict/{tech}/{site}/{sample}/{sample}.mykrobe.json"
+                amr_dir / "{sample}.mykrobe.json"
         ),
     shadow:
         "shallow"
