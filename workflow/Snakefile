@@ -49,6 +49,7 @@ for sample, row in samplesheet.iterrows():
     mykrobe_results.add(amr_dir / f"{sample}.mykrobe.json")
     rasusa_logs.add(rule_log_dir / f"subsample_reads/{sample}.log")
 output.add(report_dir / "composition.html")
+output.add(report_dir / "amr.html")
 # =====================================
 
 

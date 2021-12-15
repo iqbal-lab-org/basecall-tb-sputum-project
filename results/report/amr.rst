@@ -1,0 +1,1 @@
+The HTML file attached here gives the AMR predictions for each sample.

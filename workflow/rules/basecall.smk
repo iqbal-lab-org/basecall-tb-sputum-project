@@ -71,7 +71,9 @@ rule combine_fastqs:
         rule_log_dir / f"combine_fastqs/guppy_v{GUPPY_VERSION}/{{sample}}.log",
     threads: 4
     resources:
-        mem_mb=lambda wildcards, attempt: {1: int(8*GB), 2: int(36*GB)}.get(attempt, int(80*GB)),
+        mem_mb=lambda wildcards, attempt: {1: int(8 * GB), 2: int(36 * GB)}.get(
+            attempt, int(80 * GB)
+        ),
     params:
         opts="-f -g",
         fastq_dir=lambda wildcards, input: infer_sample_fastq_dir(

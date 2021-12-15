@@ -1,0 +1,7 @@
+name: amr_report
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - jinja2=3.0

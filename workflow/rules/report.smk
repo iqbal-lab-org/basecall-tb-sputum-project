@@ -51,3 +51,25 @@ rule composition_report:
             --contam-warning {params.contam_warning} \
             --unmapped-warning {params.unmapped_warning} 2> {log}
         """
+
+
+rule amr_report:
+    input:
+        predictions=expand(amr_dir / "{sample}.mykrobe.json", sample=samplesheet.index),
+        template=report_dir / "amr.html.jinja",
+    output:
+        report=report(
+            report_dir / "amr.html",
+            category="AMR predictions",
+            caption=report_dir / "amr.rst",
+        ),
+    resources:
+        mem_mb=int(4 * GB),
+    params:
+        script=scripts_dir / "amr_report.py",
+    log:
+        rule_log_dir / "amr_report.log",
+    conda:
+        str(env_dir / "amr_report.yaml")
+    shell:
+        "python {params.script} {input.template} {input.predictions} 2> {log} > {output.report}"

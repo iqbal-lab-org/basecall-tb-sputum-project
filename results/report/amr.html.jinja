@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>AMR prediction report</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        tr:hover {
+            background-color: #88c0d0 !important;
+        }
+
+        tr:nth-child(even) {
+            background-color: #eceff4;
+        }
+
+        th, td {
+            padding: 5px;
+            color: #2e3440;
+        }
+
+        td {
+            font-family: 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
+            font-size: 12px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            font-size: 14px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .R {
+            font-weight: bold;
+            background-color: #bf616a;
+        }
+
+        a.tip {
+            border-bottom: none;
+        }
+
+        a.tip:hover {
+            cursor: text;
+            position: relative
+        }
+
+        a.tip span {
+            display: none
+        }
+
+        a.tip:hover span {
+            border: #c0c0c0 1px dotted;
+            padding: 5px 20px 5px 5px;
+            display: block;
+            z-index: 100;
+            left: 0px;
+            margin: 10px;
+            width: 300px;
+            position: absolute;
+            top: 0px;
+            text-decoration: none;
+            background-color: #2e3440;
+            -webkit-user-select: text; /* Safari */
+            -ms-user-select: text; /* IE 10 and IE 11 */
+            user-select: text; /* Standard syntax */
+        }
+
+        {# make the whole td (cell) a hyperlink #}
+        td a {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+
+<div>
+    This table shows the Mykrobe resistance predictions for each sample. Cells coloured
+    red are resistant. Hover the mouse over these squares to see information about the
+    variant(s) Mykrobe found to support the prediction.
+</div>
+
+<div>
+    <br>
+    <table>
+        <tr>
+            {% for h in header %}
+                <th>{{ h }}</th>
+            {% endfor %}
+        </tr>
+        {% for row in rows %}
+            <tr>
+                {% for el in row %}
+
+                    <td class="{{ el }}">
+                        {% if el == 'R' %}
+                            <a href="#" class="tip">
+                                {{ el }}
+                                <span style="color: #eceff4">
+                                    Sample: {{ row[0] }} <br>
+                                    Drug: {{ header[loop.index0] }} <br>
+                                    Prediction: {{ el }} <br><hr>
+                                    <strong><u>Evidence</u></strong> <br> {{ evidence[row[0]][header[loop.index0]] }}
+                                </span>
+                            </a>
+                        {% else %}
+                            {{ el }}
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
