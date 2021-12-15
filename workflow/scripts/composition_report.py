@@ -40,9 +40,26 @@ def ripgrep_search(file: Path) -> Tuple[int, int, int]:
     to_keep, contam, unmapped = list(values)
     return to_keep, contam, unmapped
 
+def ripgrep_extract_covg(file: Path) -> float:
+    pattern = r"Actual cov.*\s(?P<covg>\d+?\.?\d+)x"
+    extra_params = ["--replace", "$covg", "--only-matching", "--no-line-number"]
+    process = subprocess.Popen(
+        ["rg", *extra_params, pattern, str(file)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        encoding="utf-8",
+    )
+    exit_code = process.wait()
+    if exit_code != 0:
+        raise RipgrepError(
+            f"Failed to execute the rg command on the file {file} due to the "
+            f"following error:\n{process.stderr.read()}"
+        )
+    return float(process.stdout.read().strip())
 
 contam_warning = snakemake.params.get("contam_warning", 5.0) / 100
 unmapped_warning = snakemake.params.get("unmapped_warning", 5.0) / 100
+covg_warning = snakemake.params.get("covg_warning", 30)
 
 
 def highlight_high_contam(col: pd.Series):
@@ -60,6 +77,11 @@ def highlight_high_unmapped(col: pd.Series):
         f"background-color: {NORD12}" if val > unmapped_warning else "" for val in col
     ]
 
+def highlight_low_coverage(col: pd.Series):
+    """Highlights cells if their coverage is less than the threshold"""
+    return [
+        f"background-color: {NORD12}" if val < covg_warning else "" for val in col
+    ]
 
 def highlight_abnormal_lineages(col: pd.Series):
     """Highlights cells if their lineage is not one of the numbered majors."""
@@ -84,6 +106,11 @@ for file in logfiles:
         }
     )
 
+for file in snakemake.input.subsample_logs:
+    covg = ripgrep_extract_covg(file)
+    sample = file.name.split(".")[0]
+    data[sample]["coverage"] = round(covg, 1)
+
 assignment_files = snakemake.input.lineages
 for file in assignment_files:
     sample = file.name.split(".")[0]
@@ -99,6 +126,7 @@ percent_format_cols = [s for s in data[list(data.keys())[0]].keys() if s.endswit
 df_styled = (
     df.style.apply(highlight_high_contam, subset=["contam%"])
     .apply(highlight_abnormal_lineages, subset=["lineage"])
+    .apply(highlight_low_coverage, subset=["coverage"])
     .apply(highlight_high_unmapped, subset=["unmapped%"])
     .format("{:.2%}", subset=percent_format_cols)
 )
@@ -110,6 +138,7 @@ html = jinja2.Template(template_content).render(
     table=table_html,
     contam_warning=contam_warning,
     unmapped_warning=unmapped_warning,
+    covg_warning=covg_warning,
 )
 outfile = snakemake.output.html
 outfile.write(html)
