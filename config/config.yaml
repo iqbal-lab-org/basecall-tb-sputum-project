@@ -9,3 +9,4 @@ containers:
   base:      "docker://bash:5.1"
   seqkit:    "docker://quay.io/biocontainers/seqkit:2.1.0--h9ee0642_0"
   rasusa:    "docker://quay.io/mbhall88/rasusa:0.6.0"
+  mykrobe:   "docker://quay.io/biocontainers/mykrobe:0.10.0--py38h8e3bb3f_0"
